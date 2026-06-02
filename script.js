@@ -4,7 +4,7 @@
 const OWNER_WHATSAPP_NUMBER = "5568992526571"; // DDI + DDD + número
 
 const RESTAURANT = {
-  name: "Burger do Chefe",
+  name: "Hamburgueria Seu Auri",
   hours: "Ter–Dom · 18h às 23h30",
 };
 
@@ -14,9 +14,9 @@ const STORE_MAPS_URL = "https://www.google.com/maps?q=Brasileia,AC";
 const DELIVERY_FEES = { retirada: 0, Brasileia: 5, "Epitaciolândia": 7 };
 
 const PRODUCTS = [
-  { id: "hamburguer", name: "Clássico da Casa", description: "Pão, alface, tomate, carne, queijo, calabresa e batata palha.", price: 13, image: "img/classico.png", category: "burger", tag: "Top vendido" },
-  { id: "hamburguer-especial", name: "Turbinado", description: "Pão, alface, tomate, carne, queijo, presunto, calabresa, bacon e batata palha.", price: 18, image: "img/turbinado.png", category: "burger" },
-  { id: "hamburguer-duplo", name: "Duplo Supremo", description: "Pão, alface, tomate, 2 carnes, 2 queijos, 2 presuntos, 2 bacons e batata palha.", price: 23, image: "img/duplo.png", category: "burger", tag: "Pra fome grande" },
+  { id: "classico", name: "Clássico da Casa", description: "Pão, alface, tomate, carne, queijo, calabresa e batata palha.", price: 13, image: "img/classico.png", category: "burger", tag: "Top vendido" },
+  { id: "turbinado", name: "Turbinado", description: "Pão, alface, tomate, carne, queijo, presunto, calabresa, bacon e batata palha.", price: 18, image: "img/turbinado.png", category: "burger" },
+  { id: "duplo", name: "Duplo Supremo", description: "Pão, alface, tomate, 2 carnes, 2 queijos, 2 presuntos, 2 bacons e batata palha.", price: 23, image: "img/duplo.png", category: "burger", tag: "Pra fome grande" },
 ];
 
 const fmt = (n) => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -41,41 +41,24 @@ function initFireParticles() {
   const canvas = document.createElement("canvas");
   canvas.id = "fire-canvas";
   document.body.prepend(canvas);
-
   const ctx = canvas.getContext("2d");
   let W = 0, H = 0;
-
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
   resize();
   window.addEventListener("resize", resize);
-
-  // Paleta de brasas: laranja, vermelho, amarelo-fogo
-  const COLORS = [
-    [255, 80, 20],   // laranja-fogo
-    [255, 45, 10],   // vermelho brasa
-    [255, 140, 30],   // laranja claro
-    [255, 200, 50],   // amarelo quente
-    [200, 40, 10],   // vermelho escuro
-  ];
-
+  const COLORS = [[255,80,20],[255,45,10],[255,140,30],[255,200,50],[200,40,10]];
   class Ember {
-    constructor(scatter) {
-      this.reset(scatter);
-    }
+    constructor(scatter) { this.reset(scatter); }
     reset(scatter) {
       this.x = Math.random() * W;
-      // scatter = true espalha pelo canvas inteiro na inicialização
       this.y = scatter ? Math.random() * H : H + 10 + Math.random() * 40;
-      this.r = Math.random() * 2.2 + 0.6;           // raio 0.6–2.8px
-      this.vy = -(Math.random() * 1.1 + 0.4);       // velocidade pra cima
-      this.vx = (Math.random() - 0.5) * 0.5;        // drift lateral
-      this.life = Math.random() * 0.6 + 0.4;        // vida 0.4–1.0
-      this.decay = Math.random() * 0.0025 + 0.0008; // quão rápido apaga
+      this.r = Math.random() * 2.2 + 0.6;
+      this.vy = -(Math.random() * 1.1 + 0.4);
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.life = Math.random() * 0.6 + 0.4;
+      this.decay = Math.random() * 0.0025 + 0.0008;
       this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      this.wobble = Math.random() * Math.PI * 2;     // fase do sway
+      this.wobble = Math.random() * Math.PI * 2;
       this.wobbleSpeed = Math.random() * 0.04 + 0.01;
     }
     update() {
@@ -83,14 +66,11 @@ function initFireParticles() {
       this.x += this.vx + Math.sin(this.wobble) * 0.3;
       this.y += this.vy;
       this.life -= this.decay;
-      if (this.life <= 0 || this.y < -20 || this.x < -20 || this.x > W + 20) {
-        this.reset(false);
-      }
+      if (this.life <= 0 || this.y < -20 || this.x < -20 || this.x > W + 20) this.reset(false);
     }
     draw() {
       const alpha = Math.max(0, this.life) * 0.55;
       const [r, g, b] = this.color;
-      // Brilho suave ao redor
       const grd = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 2.5);
       grd.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
       grd.addColorStop(0.5, `rgba(${r},${g},${b},${alpha * 0.4})`);
@@ -101,18 +81,8 @@ function initFireParticles() {
       ctx.fill();
     }
   }
-
-  // Cria partículas — menos em mobile (< 600px)
   const COUNT = window.innerWidth < 600 ? 55 : 100;
   const embers = Array.from({ length: COUNT }, (_, i) => new Ember(true));
-
-  // Spawn ocasional de novas partículas
-  function spawnBatch() {
-    embers.forEach(e => {
-      if (e.life <= 0) e.reset(false);
-    });
-  }
-
   let rafId;
   function animate() {
     ctx.clearRect(0, 0, W, H);
@@ -120,11 +90,8 @@ function initFireParticles() {
     rafId = requestAnimationFrame(animate);
   }
   animate();
-
-  // Pausa quando aba está oculta (economia de bateria)
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) cancelAnimationFrame(rafId);
-    else animate();
+    if (document.hidden) cancelAnimationFrame(rafId); else animate();
   });
 }
 
@@ -134,12 +101,9 @@ function initFireParticles() {
 const PAY_LABEL = { pix: "Pix", credito: "Cartão de crédito", debito: "Cartão de débito", dinheiro: "Dinheiro em mão" };
 
 let state = {
-  items: [],
-  step: 1,
-  orderType: null,
+  items: [], step: 1, orderType: null,
   customer: { name: "", notes: "", street: "", number: "", neighborhood: "", complement: "", reference: "", coords: null },
-  payment: null,
-  change: "",
+  payment: null, change: "",
 };
 
 const subtotal = () => state.items.reduce((s, i) => s + i.qty * i.product.price, 0);
@@ -151,11 +115,15 @@ function addItem(product) {
   const found = state.items.find(i => i.product.id === product.id);
   if (found) found.qty++;
   else state.items.push({ product, qty: 1 });
+  // Registra clique/adição no analytics
+  if (window.AurixAnalytics) AurixAnalytics.recordProductClick(product.id, product.name, "add");
 }
+
 function setQty(id, qty) {
   if (qty <= 0) state.items = state.items.filter(i => i.product.id !== id);
   else { const f = state.items.find(i => i.product.id === id); if (f) f.qty = qty; }
 }
+
 function resetOrder() {
   state.items = [];
   state.orderType = null;
@@ -169,112 +137,116 @@ function resetOrder() {
 // ============================================
 function goTo(n) {
   state.step = n;
-
   document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
-  // Remove e re-adiciona a classe para re-disparar a animação
   const target = document.getElementById(`step-${n}`);
   target.classList.add("active");
-
   document.querySelectorAll(".s-item").forEach(el => {
-    const s = Number(el.dataset.step);
+    const num = Number(el.dataset.step);
     el.classList.remove("active", "done");
-    if (s === n) el.classList.add("active");
-    if (s < n) { el.classList.add("done"); el.querySelector("span").textContent = "✓"; }
-    else el.querySelector("span").textContent = s;
+    if (num === n) el.classList.add("active");
+    else if (num < n) el.classList.add("done");
   });
-
-  [1, 2, 3, 4].forEach(i => {
-    const line = document.getElementById(`line${i}${i + 1}`);
-    if (line) line.classList.toggle("done", i < n);
+  document.querySelectorAll(".s-line").forEach(el => {
+    const after = Number(el.dataset.after);
+    el.classList.toggle("done", after < n);
   });
-
-  document.getElementById("btn-restart").classList.toggle("hidden", n === 1);
-  document.getElementById("bottom-bar").style.display = n === 1 ? "flex" : "none";
-
+  // Mostra botão Recomeçar apenas após etapa 1
+  const btnR = document.getElementById("btn-restart");
+  if (btnR) btnR.classList.toggle("hidden", n === 1);
   window.scrollTo({ top: 0, behavior: "smooth" });
-
   if (n === 5) renderReview();
 }
 
 // ============================================
-//  Cardápio
+//  Render de produtos
 // ============================================
-function renderCard(p) {
-  const inCart = state.items.find(i => i.product.id === p.id);
-  const qty = inCart?.qty ?? 0;
-  return `
-    <article class="prod-card">
-      <div class="prod-img-wrap">
-        <img class="prod-img" src="${p.image}" alt="${p.name}" loading="lazy" />
-        ${p.tag ? `<span class="prod-badge">${p.tag}</span>` : ""}
-        ${qty > 0 ? `<span class="prod-incart">✓ ${qty}x</span>` : ""}
-      </div>
-      <div class="prod-body">
-        <div>
-          <h3 class="prod-name">${p.name}</h3>
-          <p class="prod-desc">${p.description}</p>
-        </div>
-        <span class="prod-price">${fmt(p.price)}</span>
-        ${qty === 0
-      ? `<button class="btn-hero full" data-add="${p.id}">🛍 Adicionar</button>`
-      : `<div class="qty-ctrl">
-               <button class="qty-btn" data-dec="${p.id}">−</button>
-               <span class="qty-num">${qty}</span>
-               <button class="qty-btn" data-inc="${p.id}">+</button>
-             </div>`}
-      </div>
-    </article>`;
-}
-
 function renderGrids() {
-  const grid = document.getElementById("grid-burgers");
-  if (grid) {
-    grid.innerHTML = PRODUCTS.filter(p => p.category === "burger").map(renderCard).join("");
-  }
-
-  document.querySelectorAll("[data-add]").forEach(b => b.addEventListener("click", () => { addItem(PRODUCTS.find(p => p.id === b.dataset.add)); renderGrids(); updateBottomBar(); }));
-  document.querySelectorAll("[data-inc]").forEach(b => b.addEventListener("click", () => { setQty(b.dataset.inc, (state.items.find(i => i.product.id === b.dataset.inc)?.qty || 0) + 1); renderGrids(); updateBottomBar(); }));
-  document.querySelectorAll("[data-dec]").forEach(b => b.addEventListener("click", () => { setQty(b.dataset.dec, (state.items.find(i => i.product.id === b.dataset.dec)?.qty || 0) - 1); renderGrids(); updateBottomBar(); }));
+  renderGrid("grid-burgers", PRODUCTS.filter(p => p.category === "burger"));
 }
 
-function updateBottomBar() {
-  const c = count();
-  document.getElementById("bb-count").textContent = c === 0 ? "Carrinho vazio" : `${c} ${c === 1 ? "item" : "itens"}`;
-  document.getElementById("bb-total").textContent = fmt(subtotal());
-  document.getElementById("btn-continue-1").disabled = state.items.length === 0;
+function renderGrid(id, products) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = products.map(p => {
+    const inCart = state.items.find(i => i.product.id === p.id);
+    const qty = inCart ? inCart.qty : 0;
+    const badge = p.tag ? `<span class="prod-badge">${escapeHtml(p.tag)}</span>` : "";
+    const incart = qty > 0 ? `<span class="prod-incart">✓ ${qty} no carrinho</span>` : "";
+    const ctrl = qty > 0
+      ? `<div class="qty-ctrl">
+           <button class="qty-btn" data-id="${p.id}" data-action="dec">−</button>
+           <span class="qty-num">${qty}</span>
+           <button class="qty-btn" data-id="${p.id}" data-action="inc">+</button>
+         </div>`
+      : `<button class="btn-hero full" data-id="${p.id}" data-action="add">Adicionar +</button>`;
+    return `
+      <div class="prod-card" data-id="${escapeHtml(p.id)}">
+        <div class="prod-img-wrap">
+          <img class="prod-img" src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" />
+          ${badge}${incart}
+        </div>
+        <div class="prod-body">
+          <div class="prod-name">${escapeHtml(p.name)}</div>
+          <div class="prod-desc">${escapeHtml(p.description)}</div>
+          <div class="prod-price">${fmt(p.price)}</div>
+          ${ctrl}
+        </div>
+      </div>`;
+  }).join("");
+
+  // Listeners nos botões do grid
+  el.querySelectorAll("[data-action]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id2 = btn.dataset.id;
+      const action = btn.dataset.action;
+      const product = PRODUCTS.find(p => p.id === id2);
+      if (!product) return;
+      if (action === "add") { addItem(product); }
+      else if (action === "inc") { addItem(product); }
+      else if (action === "dec") { const cur = state.items.find(i => i.product.id === id2); setQty(id2, cur ? cur.qty - 1 : 0); }
+      renderGrids();
+      updateBottomBar();
+    });
+  });
+
+  // Registra visualização de produto
+  if (window.AurixAnalytics) {
+    products.forEach(p => AurixAnalytics.recordProductClick(p.id, p.name, "view"));
+  }
 }
 
 // ============================================
-//  Review
+//  Bottom bar (carrinho)
+// ============================================
+function updateBottomBar() {
+  const c = count(), t = total();
+  const countEl = document.getElementById("bb-count");
+  const totalEl = document.getElementById("bb-total");
+  const btn = document.getElementById("btn-continue-1");
+  if (countEl) countEl.textContent = c > 0 ? `${c} item${c > 1 ? "s" : ""} no carrinho` : "Carrinho vazio";
+  if (totalEl) totalEl.textContent = fmt(t);
+  if (btn) btn.disabled = c === 0;
+}
+
+// ============================================
+//  Revisão do pedido
 // ============================================
 function renderReview() {
   const sub = subtotal(), f = fee(), tot = total();
+  const orderLabel = state.orderType === "retirada" ? "Retirada no local" : `Entrega — ${state.orderType}`;
   const burgers = state.items.filter(i => i.product.category === "burger");
-  const drinks = state.items.filter(i => i.product.category === "drink");
-  const orderLabel = state.orderType === "retirada" ? "Retirada no local" : `Entrega em ${state.orderType}`;
-
-  const itemRows = items => items.map(i => {
-    const safeQty = escapeHtml(String(i.qty));
-    const safeName = escapeHtml(i.product.name);
-    const safePrice = escapeHtml(fmt(i.product.price));
-    const safeTotal = escapeHtml(fmt(i.qty * i.product.price));
-    return `<div class="rev-item">
-      <span class="rev-item-name"><strong>${safeQty}x</strong> ${safeName} · ${safePrice}</span>
-      <span class="rev-item-price">${safeTotal}</span>
-    </div>`;
-  }).join("");
-
+  const itemRows = (arr) => arr.map(i =>
+    `<div class="rev-item">
+      <span class="rev-item-name"><strong>${i.qty}×</strong> ${escapeHtml(i.product.name)}</span>
+      <span class="rev-item-price">${fmt(i.qty * i.product.price)}</span>
+    </div>`
+  ).join("");
   const safeCustomer = {
-    name: escapeHtml(state.customer.name),
-    notes: escapeHtml(state.customer.notes),
-    street: escapeHtml(state.customer.street),
-    number: escapeHtml(state.customer.number),
-    neighborhood: escapeHtml(state.customer.neighborhood),
-    complement: escapeHtml(state.customer.complement),
-    reference: escapeHtml(state.customer.reference),
-    change: escapeHtml(state.change),
+    name: escapeHtml(state.customer.name), notes: escapeHtml(state.customer.notes),
+    street: escapeHtml(state.customer.street), number: escapeHtml(state.customer.number),
+    neighborhood: escapeHtml(state.customer.neighborhood), complement: escapeHtml(state.customer.complement),
+    reference: escapeHtml(state.customer.reference), change: escapeHtml(state.change),
   };
-
   let addrHtml = `<div class="rev-row"><span>Local</span><span>${escapeHtml(STORE_ADDRESS)}</span></div>`;
   if (state.orderType !== "retirada") {
     if (state.customer.coords) {
@@ -288,7 +260,6 @@ function renderReview() {
         ${safeCustomer.reference ? `<div class="rev-row"><span>Referência</span><span>${safeCustomer.reference}</span></div>` : ""}`;
     }
   }
-
   document.getElementById("review-card").innerHTML = `
     <div class="rev-card">
       <h3 class="rev-card-title">Cliente</h3>
@@ -328,7 +299,6 @@ function buildMessage() {
   const obs = state.customer.notes.trim() || "Nenhuma";
   const troco = state.payment === "dinheiro" && state.change.trim() ? `\n💵 *Troco para:* ${state.change.trim()}` : "";
   const items = state.items.map(i => `• ${i.qty}x ${i.product.name} — ${fmt(i.product.price)}`).join("\n");
-
   if (state.orderType === "retirada") {
     return `🍔 *NOVO PEDIDO — RETIRADA NO LOCAL*\n\n👤 *Cliente:* ${state.customer.name}\n\n🛒 *Itens do pedido:*\n${items}\n\n💰 *Subtotal:* ${fmt(sub)}\n✅ *Total:* ${fmt(tot)}\n\n💳 *Forma de pagamento:* ${PAY_LABEL[state.payment]}${troco}\n\n📝 *Observação:* ${obs}\n\n📍 *Tipo de pedido:* Retirada no local\n📌 *Endereço:* ${STORE_ADDRESS}`;
   } else if (state.customer.coords) {
@@ -340,40 +310,119 @@ function buildMessage() {
 }
 
 // ============================================
+//  Vídeo Hero — força reprodução em mobile
+// ============================================
+function initHeroVideo() {
+  const video = document.getElementById("hero-video");
+  if (!video) return;
+  // Força atributos críticos para autoplay em iOS/Android
+  video.setAttribute("playsinline", "");
+  video.setAttribute("muted", "");
+  video.muted = true;
+  video.setAttribute("autoplay", "");
+  video.setAttribute("loop", "");
+  // Tenta reproduzir programaticamente (necessário em alguns browsers)
+  const playPromise = video.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      // Silencia erro de política de autoplay — o poster já cobre
+    });
+  }
+  // Retenta ao interação do usuário (Safari iOS strict)
+  document.addEventListener("touchstart", function tryPlay() {
+    video.play().catch(() => {});
+    document.removeEventListener("touchstart", tryPlay);
+  }, { once: true, passive: true });
+}
+
+// ============================================
+//  Feedback
+// ============================================
+function initFeedback() {
+  let selectedRating = 0;
+  const stars = document.querySelectorAll(".star");
+  const labelEl = document.getElementById("star-label");
+  const textArea = document.getElementById("feedback-text");
+  const charEl = document.getElementById("feedback-char");
+  const sendBtn = document.getElementById("btn-feedback-send");
+  const successEl = document.getElementById("feedback-success");
+
+  const STAR_LABELS = ["", "Ruim 😞", "Regular 😐", "Bom 🙂", "Ótimo 😄", "Excelente! 🔥"];
+
+  stars.forEach(star => {
+    star.addEventListener("mouseenter", () => {
+      const n = Number(star.dataset.star);
+      stars.forEach((s, idx) => s.classList.toggle("hovered", idx < n));
+    });
+    star.addEventListener("mouseleave", () => {
+      stars.forEach(s => s.classList.remove("hovered"));
+    });
+    star.addEventListener("click", () => {
+      selectedRating = Number(star.dataset.star);
+      stars.forEach((s, idx) => s.classList.toggle("active", idx < selectedRating));
+      if (labelEl) labelEl.textContent = STAR_LABELS[selectedRating];
+    });
+  });
+
+  if (textArea && charEl) {
+    textArea.addEventListener("input", () => {
+      charEl.textContent = `${textArea.value.length} / 500`;
+    });
+  }
+
+  if (sendBtn) {
+    sendBtn.addEventListener("click", () => {
+      const text = textArea ? textArea.value.trim() : "";
+      if (!text && selectedRating === 0) {
+        alert("Por favor, dê uma avaliação com estrelas ou escreva um comentário.");
+        return;
+      }
+      if (window.AurixAnalytics) {
+        AurixAnalytics.recordFeedback(text, selectedRating);
+      }
+      // Exibe sucesso
+      sendBtn.closest(".feedback-form").classList.add("hidden");
+      document.getElementById("star-rating").classList.add("hidden");
+      if (labelEl) labelEl.classList.add("hidden");
+      if (successEl) successEl.classList.remove("hidden");
+    });
+  }
+}
+
+// ============================================
 //  Inicialização
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
-
-  // Inicia as brasas animadas no background
   initFireParticles();
-
+  initHeroVideo();
+  initFeedback();
   renderGrids();
   updateBottomBar();
 
-  document.getElementById("btn-logo").addEventListener("click", () => { resetOrder(); renderGrids(); updateBottomBar(); goTo(1); });
-  document.getElementById("btn-restart").addEventListener("click", () => { if (confirm("Recomeçar o pedido?")) { resetOrder(); renderGrids(); updateBottomBar(); goTo(1); } });
-
+  document.getElementById("btn-logo").addEventListener("click", () => {
+    resetOrder(); renderGrids(); updateBottomBar(); goTo(1);
+  });
+  document.getElementById("btn-restart").addEventListener("click", () => {
+    if (confirm("Recomeçar o pedido?")) { resetOrder(); renderGrids(); updateBottomBar(); goTo(1); }
+  });
   document.getElementById("btn-continue-1").addEventListener("click", () => {
-    if (state.items.length === 0) { alert("Adicione pelo menos 1 item ao carrinho para continuar 🍔"); return; }
+    if (state.items.length === 0) { alert("Adicione pelo menos 1 item ao carrinho 🍔"); return; }
     goTo(2);
   });
 
-  // Stepper (navega para etapas já visitadas)
   document.querySelectorAll(".s-bubble[data-goto]").forEach(btn => {
     btn.addEventListener("click", () => {
       const n = Number(btn.dataset.goto);
       if (n <= state.step) goTo(n);
     });
   });
-
-  // Botões data-goto genéricos
   document.querySelectorAll("[data-goto]").forEach(btn => {
     if (!btn.classList.contains("s-bubble")) {
       btn.addEventListener("click", () => goTo(Number(btn.dataset.goto)));
     }
   });
 
-  // ENTREGA
+  // Entrega
   document.querySelectorAll(".opt-row").forEach(row => {
     row.addEventListener("click", () => {
       document.querySelectorAll(".opt-row").forEach(r => r.classList.remove("selected"));
@@ -390,7 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
     goTo(3);
   });
 
-  // DADOS
+  // Dados
   const form = document.getElementById("customer-form");
   form.addEventListener("input", e => {
     const t = e.target;
@@ -402,7 +451,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (t.name === "complement") state.customer.complement = t.value;
     if (t.name === "reference") state.customer.reference = t.value;
   });
-
   document.getElementById("btn-next-3").addEventListener("click", () => {
     const err = document.getElementById("form-error");
     err.textContent = "";
@@ -415,7 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
     goTo(4);
   });
 
-  // PAGAMENTO
+  // Pagamento
   document.querySelectorAll(".pay-opt").forEach(btn => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".pay-opt").forEach(b => b.classList.remove("selected"));
@@ -433,9 +481,14 @@ document.addEventListener("DOMContentLoaded", () => {
     goTo(5);
   });
 
-  // ENVIO WHATSAPP
+  // Envio WhatsApp
   document.getElementById("btn-send").addEventListener("click", () => {
     if (!state.orderType || !state.payment) { alert("Faltam informações no pedido."); return; }
+    // Registra pedido e clique WA no analytics
+    if (window.AurixAnalytics) {
+      AurixAnalytics.recordOrder(state.items, total());
+      AurixAnalytics.recordWAClick("btn-enviar-pedido");
+    }
     const url = `https://wa.me/${OWNER_WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage())}`;
     window.open(url, "_blank");
     setTimeout(() => { resetOrder(); renderGrids(); updateBottomBar(); goTo(1); }, 800);
