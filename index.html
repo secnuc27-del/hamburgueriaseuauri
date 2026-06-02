@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hamburgueria Seu Auri — Hambúrgueres artesanais</title>
+  <meta name="description" content="Peça seu hambúrguer artesanal na Hamburgueria Seu Auri. Entregamos em Brasiléia e Epitaciolândia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ── Bloqueio de DevTools e inspeção ── -->
+  <script>
+    (function () {
+      // Bloqueia atalhos de teclado
+      document.addEventListener("keydown", function (e) {
+        // F12
+        if (e.keyCode === 123) { e.preventDefault(); return false; }
+        // Ctrl+U, Ctrl+S, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+        if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
+        if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); return false; }
+        // Alt+F4 proteção leve
+        if (e.altKey && e.keyCode === 115) { e.preventDefault(); }
+      });
+      // Bloqueia menu de contexto (clique direito)
+      document.addEventListener("contextmenu", function (e) { e.preventDefault(); return false; });
+      // Detecção de DevTools aberto (heurística por timing)
+      var devToolsOpen = false;
+      var threshold = 160;
+      setInterval(function () {
+        if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+          if (!devToolsOpen) {
+            devToolsOpen = true;
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#111;color:#f60;font-family:sans-serif;font-size:22px;text-align:center;padding:20px;">🔒 Acesso restrito.<br><small style="font-size:14px;color:#888;margin-top:8px;display:block;">Feche as ferramentas do desenvolvedor para continuar.</small></div>';
+          }
+        } else {
+          if (devToolsOpen) { devToolsOpen = false; location.reload(); }
+        }
+      }, 1000);
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container hd-inner">
+      <button class="logo" id="btn-logo">
+        <span class="logo-icon">🔥</span>
+        <span class="logo-name">Hamburgueria Seu Auri</span>
+      </button>
+      <button class="btn-restart hidden" id="btn-restart">Recomeçar</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════
+       ETAPA 1 — CARDÁPIO
+  ══════════════════════════════ -->
+  <section class="step active" id="step-1">
+    <div class="container step-body pb-bar">
+      <div class="step-header centered">
+        <p class="step-eyebrow">Etapa 1 de 5</p>
+        <h1 class="step-title">Monte seu <span class="grad-text">pedido</span></h1>
+        <p class="step-desc">Escolha seus hambúrgueres. Revise tudo antes de enviar pelo WhatsApp.</p>
+      </div>
+
+      <div class="cat-section">
+        <div class="cat-heading">
+          <span class="cat-icon fire" style="overflow:hidden;padding:0;"><img src="img/oii_amo_vcs.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" /></span>
+          <h2 class="cat-title">Hambúrgueres</h2>
+        </div>
+        <div class="grid3" id="grid-burgers"></div>
+      </div>
+
+    </div>
+
+    <!-- Barra inferior fixa -->
+    <div class="bottom-bar" id="bottom-bar">
+      <div class="bb-left">
+        <span class="bb-count" id="bb-count">Carrinho vazio</span>
+        <span class="bb-total" id="bb-total">R$ 0,00</span>
+      </div>
+      <button class="btn-hero" id="btn-continue-1" disabled>Continuar →</button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       ETAPA 2 — RETIRADA
+  ══════════════════════════════ -->
+  <section class="step" id="step-2">
+    <div class="container step-body">
+      <div class="step-header centered">
+        <p class="step-eyebrow">Etapa 2 de 5</p>
+        <h1 class="step-title">Confirme a <span class="grad-text">retirada</span></h1>
+      </div>
+
+      <div class="option-list" id="delivery-options">
+        <button class="opt-row" data-type="retirada">
+          <span class="opt-icon">🏪</span>
+          <span class="opt-info">
+            <span class="opt-name">Retirada no local</span>
+            <span class="opt-sub">Sem taxa · Você busca na lanchonete</span>
+          </span>
+          <span class="opt-price free">Grátis</span>
+        </button>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-outline" data-goto="1">← Voltar</button>
+        <button class="btn-hero" id="btn-next-2" disabled>Continuar →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       ETAPA 3 — DADOS
+  ══════════════════════════════ -->
+  <section class="step" id="step-3">
+    <div class="container step-body">
+      <div class="step-header centered">
+        <p class="step-eyebrow">Etapa 3 de 5</p>
+        <h1 class="step-title">Seus <span class="grad-text">dados</span></h1>
+      </div>
+
+      <form id="customer-form" onsubmit="return false">
+        <div class="field">
+          <label class="field-label">Nome completo *</label>
+          <input type="text" name="name" placeholder="Como o vendedor deve te chamar" maxlength="80" />
+        </div>
+        <div class="field">
+          <label class="field-label">Observação do pedido</label>
+          <textarea name="notes" rows="3" placeholder="Ex: sem tomate, caprichar na batata palha, sem cebola..." maxlength="300"></textarea>
+        </div>
+
+        <div id="addr-block" class="hidden">
+          <p class="divider-text">— ou preencha o endereço —</p>
+          <div class="field-row">
+            <div class="field col2">
+              <label class="field-label">Rua *</label>
+              <input type="text" name="street" maxlength="100" />
+            </div>
+            <div class="field">
+              <label class="field-label">Número *</label>
+              <input type="text" name="number" maxlength="10" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Bairro *</label>
+            <input type="text" name="neighborhood" maxlength="60" />
+          </div>
+          <div class="field">
+            <label class="field-label">Complemento</label>
+            <input type="text" name="complement" maxlength="60" />
+          </div>
+          <div class="field">
+            <label class="field-label">Ponto de referência</label>
+            <input type="text" name="reference" maxlength="100" />
+          </div>
+        </div>
+
+        <div class="store-card hidden" id="pickup-card" style="display:none !important"></div>
+        <p class="form-error" id="form-error"></p>
+      </form>
+
+      <div class="step-nav">
+        <button class="btn-outline" data-goto="2">← Voltar</button>
+        <button class="btn-hero" id="btn-next-3">Continuar →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       ETAPA 4 — PAGAMENTO
+  ══════════════════════════════ -->
+  <section class="step" id="step-4">
+    <div class="container step-body">
+      <div class="step-header centered">
+        <p class="step-eyebrow">Etapa 4 de 5</p>
+        <h1 class="step-title">Forma de <span class="grad-text">pagamento</span></h1>
+      </div>
+
+      <div class="pay-grid" id="pay-grid">
+        <button class="pay-opt" data-pay="pix"><span class="pay-icon">📲</span><span class="pay-name">Pix</span></button>
+        <button class="pay-opt" data-pay="credito"><span class="pay-icon">💳</span><span class="pay-name">Cartão de crédito</span></button>
+        <button class="pay-opt" data-pay="debito"><span class="pay-icon">💳</span><span class="pay-name">Cartão de débito</span></button>
+        <button class="pay-opt" data-pay="dinheiro"><span class="pay-icon">💵</span><span class="pay-name">Dinheiro em mão</span></button>
+      </div>
+
+      <p class="pay-note hidden" id="pay-note-pix">O pagamento será confirmado pelo WhatsApp com a lanchonete.</p>
+      <p class="pay-note hidden" id="pay-note-card">Pagamento na retirada ou entrega. A lanchonete confirma a maquininha pelo WhatsApp.</p>
+      <div class="field hidden" id="troco-block" style="margin:16px auto 0;max-width:680px">
+        <label class="field-label">Troco para quanto? (opcional)</label>
+        <input type="text" id="troco-input" placeholder="Ex: R$ 50,00 — deixe vazio se não precisar" maxlength="20" />
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-outline" data-goto="3">← Voltar</button>
+        <button class="btn-hero" id="btn-next-4" disabled>Continuar →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       ETAPA 5 — REVISÃO
+  ══════════════════════════════ -->
+  <section class="step" id="step-5">
+    <div class="container step-body">
+      <div class="step-header centered">
+        <p class="step-eyebrow">Etapa 5 de 5</p>
+        <h1 class="step-title">Revise seu <span class="grad-text">pedido</span></h1>
+      </div>
+      <div class="review-stack" id="review-card"></div>
+      <div class="step-nav">
+        <button class="btn-outline" data-goto="4">← Voltar</button>
+        <button class="btn-whatsapp" id="btn-send">📲 Enviar pedido no WhatsApp</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       SEÇÃO DE FEEDBACK
+  ══════════════════════════════ -->
+  <section class="feedback-section" id="feedback-section">
+    <div class="container">
+      <div class="feedback-inner">
+        <div class="feedback-header">
+          <span class="feedback-icon">💬</span>
+          <h2 class="feedback-title">Sua <span class="grad-text">opinião</span> importa</h2>
+          <p class="feedback-desc">Deixe um comentário, sugestão ou avaliação. Queremos sempre melhorar!</p>
+        </div>
+
+        <!-- Avaliação por estrelas -->
+        <div class="star-rating" id="star-rating" role="group" aria-label="Avaliação em estrelas">
+          <button class="star" data-star="1" aria-label="1 estrela">★</button>
+          <button class="star" data-star="2" aria-label="2 estrelas">★</button>
+          <button class="star" data-star="3" aria-label="3 estrelas">★</button>
+          <button class="star" data-star="4" aria-label="4 estrelas">★</button>
+          <button class="star" data-star="5" aria-label="5 estrelas">★</button>
+        </div>
+        <p class="star-label" id="star-label">Clique nas estrelas para avaliar</p>
+
+        <div class="feedback-form">
+          <textarea
+            id="feedback-text"
+            class="feedback-textarea"
+            placeholder="Escreva sua opinião aqui... (máx. 500 caracteres)"
+            maxlength="500"
+            rows="4"
+          ></textarea>
+          <div class="feedback-footer">
+            <span class="feedback-char" id="feedback-char">0 / 500</span>
+            <button class="btn-feedback-send" id="btn-feedback-send">Enviar feedback ✉️</button>
+          </div>
+        </div>
+
+        <div class="feedback-success hidden" id="feedback-success">
+          <span class="feedback-success-icon">✅</span>
+          <p>Obrigado pelo seu feedback! Sua opinião foi registrada.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer simples -->
+  <footer class="site-footer">
+    <p>© 2025 Hamburgueria Seu Auri · Brasiléia - AC · Todos os direitos reservados</p>
+  </footer>
+
+  <!-- Analytics (deve ser o primeiro script) -->
+  <script src="analytics.js"></script>
+  <!-- Script principal -->
+  <script src="script.js"></script>
+</body>
+</html>
