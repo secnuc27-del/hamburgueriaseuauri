@@ -116,7 +116,11 @@
     }
   };
 
-  // Registra visita automaticamente
-  recordVisit();
+  // Registra visita automaticamente se não for a página de administração e o referer não vier do painel
+  const isDocAdmin = window.location.pathname.toLowerCase().includes("admin");
+  const isRefAdmin = document.referrer && document.referrer.toLowerCase().includes("admin");
+  if (!isDocAdmin && !isRefAdmin) {
+    recordVisit();
+  }
 
 })();
