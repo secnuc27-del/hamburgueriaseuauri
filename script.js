@@ -405,13 +405,42 @@ const FIREBASE_DB_URL_MAIN = "https://hamburgueriaseuauri-default-rtdb.firebasei
 const OPEN_HOUR_MAIN  = 18;
 const CLOSE_HOUR_MAIN = 22;
 
+function getNowAcre() {
+  try {
+    const d = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Rio_Branco",
+      hour12: false,
+      year: "numeric", month: "numeric", day: "numeric",
+      hour: "numeric", minute: "numeric", second: "numeric",
+      weekday: "short"
+    });
+    const parts = formatter.formatToParts(d);
+    const getPart = type => parts.find(p => p.type === type).value;
+    const daysMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    return {
+      hours: parseInt(getPart("hour"), 10),
+      minutes: parseInt(getPart("minute"), 10),
+      seconds: parseInt(getPart("second"), 10),
+      day: daysMap[getPart("weekday")]
+    };
+  } catch (e) {
+    const d = new Date();
+    return {
+      hours: d.getHours(),
+      minutes: d.getMinutes(),
+      seconds: d.getSeconds(),
+      day: d.getDay()
+    };
+  }
+}
+
 async function checkAndApplySiteStatus() {
   // 1. Horário automático (Acre UTC-5)
-  let now = new Date();
-  try { now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Rio_Branco" })); } catch(e) {}
-  const day     = now.getDay();
-  const h       = now.getHours();
-  const totalMin = h * 60 + now.getMinutes();
+  const acre = getNowAcre();
+  const day = acre.day;
+  const h = acre.hours;
+  const totalMin = h * 60 + acre.minutes;
   const isWeekend      = (day === 0 || day === 6);
   const isOutsideHours = (totalMin < OPEN_HOUR_MAIN * 60 || totalMin >= CLOSE_HOUR_MAIN * 60);
 
