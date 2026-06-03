@@ -2422,15 +2422,41 @@ async function loadSiteStatus() {
   return fb;
 }
 
-function checkSiteClosedState() {
-  let now = new Date();
+function getNowAcre() {
   try {
-    now = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Rio_Branco"}));
-  } catch (e) {}
+    const d = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Rio_Branco",
+      hour12: false,
+      year: "numeric", month: "numeric", day: "numeric",
+      hour: "numeric", minute: "numeric", second: "numeric",
+      weekday: "short"
+    });
+    const parts = formatter.formatToParts(d);
+    const getPart = type => parts.find(p => p.type === type).value;
+    const daysMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    return {
+      hours: parseInt(getPart("hour"), 10),
+      minutes: parseInt(getPart("minute"), 10),
+      seconds: parseInt(getPart("second"), 10),
+      day: daysMap[getPart("weekday")]
+    };
+  } catch (e) {
+    const d = new Date();
+    return {
+      hours: d.getHours(),
+      minutes: d.getMinutes(),
+      seconds: d.getSeconds(),
+      day: d.getDay()
+    };
+  }
+}
 
-  const day = now.getDay();
-  const h = now.getHours();
-  const m = now.getMinutes();
+function checkSiteClosedState() {
+  const acre = getNowAcre();
+  const day = acre.day;
+  const h = acre.hours;
+  const m = acre.minutes;
   const totalMin  = h * 60 + m;
   const openMin   = OPEN_HOUR  * 60;
   const closeMin  = CLOSE_HOUR * 60;
@@ -2444,7 +2470,7 @@ function checkSiteClosedState() {
   })();
   const isManual = status && status.locked === true;
 
-  return { isWeekend, isOutsideHours, isManual, manualMsg: (status && status.message) || '', now, h, m, day };
+  return { isWeekend, isOutsideHours, isManual, manualMsg: (status && status.message) || '', now: acre, h, m, day };
 }
 
 function updateSiteStatusUI() {
