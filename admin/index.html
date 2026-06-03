@@ -7,10 +7,37 @@
   <meta name="robots" content="noindex, nofollow" />
   <!-- Chart.js para gráficos -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <!-- PowerPoint Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
   <!-- Tipografia Premium -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Scripts de Segurança (Desabilitar Botão Direito, F12, Ctrl+U e Detecção de DevTools) -->
+  <script>
+    (function () {
+      document.addEventListener("keydown", function (e) {
+        if (e.keyCode === 123) { e.preventDefault(); return false; }
+        if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
+        if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); return false; }
+        if (e.altKey && e.keyCode === 115) { e.preventDefault(); }
+      });
+      document.addEventListener("contextmenu", function (e) { e.preventDefault(); return false; });
+      var devToolsOpen = false;
+      var threshold = 160;
+      setInterval(function () {
+        if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+          if (!devToolsOpen) {
+            devToolsOpen = true;
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#FCFAF6;color:#B27B3C;font-family:\'Plus Jakarta Sans\', sans-serif;font-size:22px;text-align:center;padding:20px;flex-direction:column;font-weight:600;line-height:1.4;">🔒 Acesso restrito.<br><small style="font-size:14px;color:#5C5549;margin-top:8px;display:block;">Feche as ferramentas do desenvolvedor para continuar.</small></div>';
+          }
+        } else {
+          if (devToolsOpen) { devToolsOpen = false; location.reload(); }
+        }
+      }, 1000);
+    })();
+  </script>
   
   <style>
     /* ───── VARIÁVEIS DE COR PREMIUM (Charcoal & Amber Gold) ───── */
@@ -1004,13 +1031,6 @@
 
       <!-- ── DASHBOARD ── -->
       <div class="page active" id="page-dashboard">
-        <div class="security-badge">
-          <!-- Shield SVG -->
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-          Área Autenticada · Dados Seguros e Criptografados
-        </div>
         
         <div class="page-title-wrap">
           <h1 class="page-title">Dashboard</h1>
@@ -1033,19 +1053,6 @@
             Atualizar agora
           </button>
           <span class="realtime-time" id="last-update-dash">—</span>
-        </div>
-
-        <!-- Alerta de LocalStorage -->
-        <div class="realtime-notice">
-          <!-- Info SVG -->
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-          <span>
-            <strong>Nota de armazenamento:</strong> Este painel coleta e processa dados salvos localmente nos navegadores dos clientes. Os dados exibidos abaixo refletem as interações registradas no <strong>seu navegador atual</strong>. Para obter dados consolidados de múltiplos clientes, você pode utilizar o botão <strong>Exportar JSON</strong> no menu de relatórios.
-          </span>
         </div>
 
         <!-- KPIs Grid -->
@@ -1213,22 +1220,15 @@
             </svg>
             Exportar Relatório Word
           </button>
-          <button class="btn-export" id="export-csv">
-            <!-- Sheet / Table Icon SVG -->
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="3" y1="9" x2="21" y2="9"></line>
-              <line x1="9" y1="21" x2="9" y2="9"></line>
+          <button class="btn-export" id="export-ppt">
+            <!-- PowerPoint Icon SVG (Screen-like shape) -->
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+              <polygon points="10 7 15 10 10 13"></polygon>
             </svg>
-            Exportar Tabela CSV
-          </button>
-          <button class="btn-export" id="export-json">
-            <!-- Code / Bracket Icon SVG -->
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6"></polyline>
-              <polyline points="8 6 2 12 8 18"></polyline>
-            </svg>
-            Exportar Dados JSON
+            Exportar Apresentação PowerPoint
           </button>
           <button class="btn-export danger" id="btn-clear-data" style="margin-left: auto">
             <!-- Trash Icon SVG -->
@@ -1281,9 +1281,9 @@
 
 <!-- UNDO TOAST -->
 <div class="undo-toast" id="undoToast">
-  <span class="undo-toast-text">Métricas limpas e reiniciadas.</span>
+  <span class="undo-toast-text">Dados apagados do painel.</span>
   <button class="btn-undo" id="undoBtn" onclick="undoReset()">Desfazer</button>
-  <span class="undo-countdown" id="undoCountdown">3:00</span>
+  <span class="undo-countdown" id="undoCountdown">2:00</span>
   <div class="undo-bar" id="undoBar"></div>
 </div>
 
@@ -1345,7 +1345,6 @@ function createSession() {
 
 function destroySession() {
   sessionStorage.removeItem(SESSION_KEY);
-  sessionStorage.removeItem(ATTEMPTS_KEY);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2057,17 +2056,9 @@ function triggerRefresh(btnId, renderFn) {
 //  INICIALIZAÇÃO DO ECOSSISTEMA DO PAINEL
 // ═══════════════════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", async () => {
+  // Força o encerramento da sessão anterior ao carregar/recarregar a página
+  destroySession();
   loadAttempts();
-
-  // Verifica se existe sessão ativa
-  if (isSessionValid()) {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("admin-screen").style.display = "block";
-    renderDashboard();
-    setupNavigation();
-    startRealtime();
-    return;
-  }
 
   // Lógica de Autenticação do Login
   const loginBtn = document.getElementById("login-btn");
@@ -2198,33 +2189,35 @@ function setupNavigation() {
 
   // Ações de exportação
   document.getElementById("export-word").addEventListener("click", exportWord);
-  document.getElementById("export-csv").addEventListener("click", exportCSV);
-  document.getElementById("export-json").addEventListener("click", exportJSON);
+  document.getElementById("export-ppt").addEventListener("click", exportPPT);
 
-  // Limpeza de métricas com suporte a desfazer (Undo)
+  // Limpeza imediata de métricas com alerta e suporte a desfazer (Undo) por 2 minutos
   document.getElementById("btn-clear-data").addEventListener("click", () => {
-    showConfirmModal(
-      'Limpar todas as estatísticas?',
-      'Esta ação apagará todos os dados de acessos, cliques e feedbacks registrados. Você terá 3 minutos (180s) para desfazer a ação caso mude de ideia.',
-      async () => {
-        _backupData = getData();
-        try {
-          if (window.AurixAnalytics) AurixAnalytics.clearAll();
-          else ["aurix_visits","aurix_product_clicks","aurix_orders","aurix_wa_clicks","aurix_feedbacks"].forEach(k => localStorage.removeItem(k));
-          
-          await renderDashboard();
-          _startUndo();
-        } catch {
-          alert('Houve um erro ao reiniciar os dados.');
-          _backupData = null;
-        }
-      }
-    );
+    _backupData = getData();
+    try {
+      if (window.AurixAnalytics) AurixAnalytics.clearAll();
+      else ["aurix_visits","aurix_product_clicks","aurix_orders","aurix_wa_clicks","aurix_feedbacks"].forEach(k => localStorage.removeItem(k));
+      
+      // Atualiza a visualização imediatamente na tela (já tem que apagar)
+      renderDashboard();
+      if (currentPage === "products") renderProducts();
+      if (currentPage === "visits") renderVisits();
+      if (currentPage === "feedbacks") renderFeedbacks();
+      if (currentPage === "reports") renderReports();
+      
+      // Mensagem de confirmação de exclusão
+      alert('Dados apagados com sucesso! Você tem 2 minutos para desfazer no rodapé da página.');
+      
+      _startUndo();
+    } catch (e) {
+      alert('Houve um erro ao apagar os dados.');
+      _backupData = null;
+    }
   });
 }
 
 function _startUndo() {
-  _undoSecs = 180;
+  _undoSecs = 120; // 2 minutos para desfazer
   const toast = document.getElementById('undoToast');
   const bar   = document.getElementById('undoBar');
   toast.classList.add('visible');
@@ -2251,6 +2244,150 @@ function _updateUndoLabel() {
   const m = Math.floor(_undoSecs / 60);
   const s = _undoSecs % 60;
   document.getElementById('undoCountdown').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  EXPORTAÇÃO DE RELATÓRIO DO POWERPOINT (.PPTX SLIDES)
+// ═══════════════════════════════════════════════════════════
+async function exportPPT() {
+  const { visits, clicks, orders, waClicks, feedbacks } = getData();
+  const n = visits.length;
+  const dateStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const totalRevenue = orders.reduce((s, o) => s + (o.total || 0), 0);
+  
+  const feedbacksComNota = feedbacks.filter(f => f.rating > 0);
+  const avgRating = feedbacksComNota.length
+    ? (feedbacksComNota.reduce((s, f) => s + f.rating, 0) / feedbacksComNota.length).toFixed(1)
+    : "—";
+
+  if (!window.PptxGenJS) {
+    alert("O gerador de PowerPoint ainda está carregando. Por favor, aguarde alguns instantes.");
+    return;
+  }
+
+  let pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_16x9';
+
+  // Slide 1: Capa
+  let slide1 = pptx.addSlide();
+  slide1.background = { color: 'FCFAF6' };
+  
+  slide1.addText("Hamburgueria Seu Auri", { 
+    x: 0.8, y: 1.5, w: 10, h: 1, 
+    fontSize: 44, bold: true, color: 'B27B3C', fontFace: 'Arial' 
+  });
+  slide1.addText("Relatório de Desempenho e Tráfego do Cardápio", { 
+    x: 0.8, y: 2.6, w: 10, h: 0.6, 
+    fontSize: 18, color: '26231E', fontFace: 'Arial' 
+  });
+  slide1.addText(`Geração: ${dateStr}   |   Total de Acessos: ${n}`, { 
+    x: 0.8, y: 4.8, w: 10, h: 0.4, 
+    fontSize: 12, color: '5C5549', fontFace: 'Arial', bold: true 
+  });
+
+  // Slide 2: KPIs
+  let slide2 = pptx.addSlide();
+  slide2.background = { color: 'FCFAF6' };
+  slide2.addText("Indicadores Gerais de Performance", { x: 0.8, y: 0.4, w: 10, h: 0.5, fontSize: 24, bold: true, color: 'B27B3C', fontFace: 'Arial' });
+
+  const kpis = [
+    { label: "SESSÕES ÚNICAS", val: String(visits.length) },
+    { label: "PEDIDOS FECHADOS", val: String(orders.length) },
+    { label: "CLIQUES WHATSAPP", val: String(waClicks.length) },
+    { label: "FATURAMENTO BRUTO", val: `R$ ${totalRevenue.toFixed(2)}` }
+  ];
+
+  kpis.forEach((k, idx) => {
+    let x = 0.8 + idx * 2.8;
+    // Caixa de fundo branca
+    slide2.addText("", {
+      x: x, y: 1.5, w: 2.5, h: 3.2,
+      fill: { color: 'FFFFFF' },
+      border: { color: 'EDEAE4', width: 1.5 }
+    });
+    // Titulo KPI
+    slide2.addText(k.label, { 
+      x: x + 0.1, y: 1.8, w: 2.3, h: 0.5, 
+      fontSize: 10, bold: true, color: '9F9789', align: 'center', fontFace: 'Arial' 
+    });
+    // Valor KPI
+    slide2.addText(k.val, { 
+      x: x + 0.1, y: 2.6, w: 2.3, h: 1.5, 
+      fontSize: 22, bold: true, color: 'B27B3C', align: 'center', fontFace: 'Arial' 
+    });
+  });
+
+  // Slide 3: Detalhes por Produto
+  let slide3 = pptx.addSlide();
+  slide3.background = { color: 'FCFAF6' };
+  slide3.addText("Estatísticas de Consumo por Hambúrguer", { x: 0.8, y: 0.4, w: 10, h: 0.5, fontSize: 24, bold: true, color: 'B27B3C', fontFace: 'Arial' });
+
+  let tableData = [
+    [
+      { text: "Hambúrguer", options: { fill: 'B27B3C', color: 'FFFFFF', bold: true } },
+      { text: "Visualizações", options: { fill: 'B27B3C', color: 'FFFFFF', bold: true, align: 'center' } },
+      { text: "No Carrinho", options: { fill: 'B27B3C', color: 'FFFFFF', bold: true, align: 'center' } },
+      { text: "Pedidos WhatsApp", options: { fill: 'B27B3C', color: 'FFFFFF', bold: true, align: 'center' } }
+    ]
+  ];
+
+  const sortedProducts = Object.entries(clicks)
+    .map(([id, data]) => {
+      const prodOrders = orders.reduce((sum, o) => sum + (o.items.find(i => i.id === id)?.qty || 0), 0);
+      return { name: data.name || id, view: data.view || 0, add: data.add || 0, orders: prodOrders };
+    })
+    .sort((a, b) => b.add - a.add);
+
+  sortedProducts.forEach(p => {
+    tableData.push([
+      { text: p.name },
+      { text: String(p.view), options: { align: 'center' } },
+      { text: String(p.add), options: { align: 'center' } },
+      { text: String(p.orders), options: { align: 'center' } }
+    ]);
+  });
+
+  slide3.addTable(tableData, { 
+    x: 0.8, y: 1.4, w: 11.7, 
+    colW: [4.7, 2.3, 2.3, 2.4], 
+    border: { color: 'EDEAE4', width: 1 },
+    fontSize: 12,
+    fontFace: 'Arial'
+  });
+
+  // Slide 4: Feedbacks Recentes
+  let slide4 = pptx.addSlide();
+  slide4.background = { color: 'FCFAF6' };
+  slide4.addText("Feedbacks e Depoimentos de Clientes", { x: 0.8, y: 0.4, w: 10, h: 0.5, fontSize: 24, bold: true, color: 'B27B3C', fontFace: 'Arial' });
+
+  let fbackList = [...feedbacks].reverse().slice(0, 3);
+  if (fbackList.length === 0) {
+    slide4.addText("Nenhum feedback registrado.", { 
+      x: 0.8, y: 2.2, w: 11.7, h: 1, 
+      fontSize: 16, color: '9F9789', align: 'center', fontFace: 'Arial' 
+    });
+  } else {
+    fbackList.forEach((f, idx) => {
+      let y = 1.4 + idx * 1.6;
+      slide4.addText("", {
+        x: 0.8, y: y, w: 11.7, h: 1.3,
+        fill: { color: 'FFFFFF' },
+        border: { color: 'EDEAE4', width: 1 }
+      });
+      const stars = "★".repeat(f.rating) + "☆".repeat(5 - f.rating);
+      const dt = formatDateTime(f.ts);
+      slide4.addText(`${stars}   |   ${dt.date} às ${dt.time}`, { 
+        x: 1.0, y: y + 0.15, w: 11.3, h: 0.3, 
+        fontSize: 11, bold: true, color: 'B27B3C', fontFace: 'Arial' 
+      });
+      slide4.addText(f.text || "Sem comentário escrito.", { 
+        x: 1.0, y: y + 0.5, w: 11.3, h: 0.7, 
+        fontSize: 13, color: '5C5549', fontFace: 'Arial', italic: !f.text 
+      });
+    });
+  }
+
+  pptx.writeFile({ fileName: `relatorio-seu-auri-${new Date().toISOString().slice(0,10)}.pptx` });
 }
 
 function _hideUndo() {
