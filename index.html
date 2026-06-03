@@ -758,21 +758,42 @@
       try { return JSON.parse(localStorage.getItem(STATUS_KEY) || 'null'); } catch { return null; }
     }
 
-    // Retorna horário atual no fuso do Acre (UTC-5)
+    // Retorna horário atual no fuso do Acre (UTC-5) sem usar parses de string propensos a erro
     function getNowAcre() {
       try {
-        // Garante o horário oficial do Acre mesmo se o visitante estiver em outro fuso
-        return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Rio_Branco"}));
+        const d = new Date();
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Rio_Branco",
+          hour12: false,
+          year: "numeric", month: "numeric", day: "numeric",
+          hour: "numeric", minute: "numeric", second: "numeric",
+          weekday: "short"
+        });
+        const parts = formatter.formatToParts(d);
+        const getPart = type => parts.find(p => p.type === type).value;
+        const daysMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+        return {
+          hours: parseInt(getPart("hour"), 10),
+          minutes: parseInt(getPart("minute"), 10),
+          seconds: parseInt(getPart("second"), 10),
+          day: daysMap[getPart("weekday")]
+        };
       } catch (e) {
-        return new Date();
+        const d = new Date();
+        return {
+          hours: d.getHours(),
+          minutes: d.getMinutes(),
+          seconds: d.getSeconds(),
+          day: d.getDay()
+        };
       }
     }
 
     async function isClosed(forceFetch) {
-      var now = getNowAcre();
-      var day = now.getDay(); // 0=Dom, 6=Sáb
-      var h   = now.getHours();
-      var m   = now.getMinutes();
+      var acre = getNowAcre();
+      var day = acre.day;
+      var h   = acre.hours;
+      var m   = acre.minutes;
       var totalMin = h * 60 + m;
       var openMin  = OPEN_HOUR  * 60; // 18:00 = 1080
       var closeMin = CLOSE_HOUR * 60; // 22:00 = 1320
@@ -788,7 +809,7 @@
       }
       var isManual = status && status.locked === true;
 
-      return { isWeekend, isOutsideHours, isManual, manualMsg: (status && status.message) || '', now, h, m, totalMin, openMin, day };
+      return { isWeekend, isOutsideHours, isManual, manualMsg: (status && status.message) || '', now: acre, h, m, totalMin, openMin, day };
     }
 
     function pad(n) { return String(n).padStart(2,'0'); }
@@ -905,7 +926,7 @@
         }
       }
 
-      var h = info.now.getHours();
+      var h = info.h;
       var isMorning = h < OPEN_HOUR;
       var periodMsg = isMorning
         ? 'Ainda não chegou a hora! Abrimos mais tarde. Fique de olho no contador.'
